@@ -1,39 +1,38 @@
-from flask import Flask
+import sqlite3
 from flask_restful import reqparse, abort, Api, Resource
-
-shop = [
-    {
-        'name': 'banana',
-        'price': 350
-    },
-    {
-        'name': 'art',
-        'price': 550
-    }
-]
-
-
-def abort_if_item_doesnt_exist(name):
-    if name not in [item['name'] for item in shop]:
-        abort(404, message=f"Item {name} doesn't exist")
 
 
 class Item(Resource):
     parser_item = reqparse.RequestParser()
     parser_item.add_argument('price', type=float)
 
-    def get(self, name):
-        abort_if_item_doesnt_exist(name)
-        for item in shop:
-            if item['name'] == name:
-                index = shop.index(item)
-                return shop[index]
+    def get(self, item_name):
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
 
-    def post(self, name):
-        args = self.parser_item.parse_args()
-        item = {'name': name, 'price': args['price']}
-        shop.append(item)
+        query = 'SELECT * FROM items WHERE item_name=?'
+        row = cursor.execute(query, (item_name,)).fetchone()
+
+        connection.close()
+
+        item = Item(*row) if row else None
+        connection.commit()
+        connection.close()
         return item
+
+    def post(self, item_name):
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+
+        args = self.parser_item.parse_args()
+
+        item = (item_name, args['password'])
+        create_user = 'INSERT INTO users VALUES (NULL, ?, ?)'
+        cursor.execute(create_user, user)
+
+        connection.commit()
+        connection.close()
+        return {}
 
     def delete(self, name):
         abort_if_item_doesnt_exist(name)

@@ -3,7 +3,7 @@ import sqlite3
 connection = sqlite3.connect('data.db')
 cursor = connection.cursor()
 
-query = 'CREATE TABLE IF NOT EXISTS users (id int, username text, password text)'
+query = 'CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username text, password text)'
 cursor.execute(query)
 
 create_user = 'INSERT INTO users VALUES (?, ?, ?)'
@@ -16,7 +16,7 @@ users = [
 ]
 cursor.executemany(create_user, users)
 
-query = 'CREATE TABLE IF NOT EXISTS items (id int, item_name text, price int)'
+query = 'CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY, item_name text, price int)'
 cursor.execute(query)
 
 create_item = 'INSERT INTO items VALUES (?, ?, ?)'

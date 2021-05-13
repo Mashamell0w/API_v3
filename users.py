@@ -9,11 +9,6 @@ users = [
 ]
 
 
-def abort_if_user_does_exist(user_name):
-    if user_name in [user['user_name'] for user in users]:
-        abort(404, message=f"User {user_name} already exist")
-
-
 class User(object):
     def __init__(self, _id, user_name, password):
         self.id = _id
@@ -55,8 +50,15 @@ class UserRegister(Resource):
     parser_item.add_argument('password')
 
     def post(self, user_name):
-        abort_if_user_does_exist(user_name)
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+
         args = self.parser_item.parse_args()
-        user = {'user_name': user_name, 'password': args['password']}
-        users.append(user)
-        return user
+
+        user = (user_name, args['password'])
+        create_user = 'INSERT INTO users VALUES (NULL, ?, ?)'
+        cursor.execute(create_user, user)
+
+        connection.commit()
+        connection.close()
+        return {}
