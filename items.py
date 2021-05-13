@@ -27,15 +27,14 @@ class Item(Resource):
         args = self.parser_item.parse_args()
 
         item = (item_name, args['password'])
-        create_user = 'INSERT INTO users VALUES (NULL, ?, ?)'
-        cursor.execute(create_user, user)
+        create_item = 'INSERT INTO items VALUES (NULL, ?, ?)'
+        cursor.execute(create_item, item)
 
         connection.commit()
         connection.close()
         return {}
 
     def delete(self, name):
-        abort_if_item_doesnt_exist(name)
         for item in shop:
             if item['name'] == name:
                 index = shop.index(item)
